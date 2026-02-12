@@ -3,10 +3,10 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>History Study – Flashcards + Practice Test</title>
+  <title>History Level Up</title>
+
   <style>
     :root{
-      /* White theme */
       --bg:#ffffff;
       --panel:#ffffff;
       --panel2:#f6f7fb;
@@ -14,7 +14,6 @@
       --muted:#6b7280;
       --line:#e5e7eb;
 
-      /* Color accents */
       --blue:#2563eb;
       --indigo:#4f46e5;
       --teal:#14b8a6;
@@ -28,6 +27,7 @@
       --sans: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
       --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
     }
+
     *{box-sizing:border-box}
     body{
       margin:0;
@@ -40,6 +40,7 @@
         var(--bg);
       min-height:100vh;
     }
+
     .wrap{max-width:1100px;margin:0 auto;padding:22px 16px 40px}
     header{
       display:flex; gap:14px; align-items:flex-end; justify-content:space-between; flex-wrap:wrap;
@@ -47,6 +48,7 @@
     }
     .brand h1{margin:0; font-size:26px; letter-spacing:.2px}
     .brand p{margin:6px 0 0;color:var(--muted); font-size:13px; max-width:760px; line-height:1.35}
+
     .tabs{
       display:flex; gap:10px; align-items:center; flex-wrap:wrap;
       background: rgba(255,255,255,.8);
@@ -63,7 +65,7 @@
       padding:9px 12px;
       border-radius:999px;
       cursor:pointer;
-      font-weight:750;
+      font-weight:800;
       font-size:13px;
       transition:.15s ease;
     }
@@ -112,7 +114,7 @@
       color: var(--blue);
       padding:10px 12px;
       border-radius: 12px;
-      font-weight:800;
+      font-weight:850;
       font-size:13px;
       transition:.15s ease;
       user-select:none;
@@ -203,7 +205,7 @@
     .tag.good{border-color: rgba(34,197,94,.25); background: rgba(34,197,94,.10); color:#065f46}
     .tag.bad{border-color: rgba(244,63,94,.25); background: rgba(244,63,94,.10); color:#9f1239}
 
-    /* Flip animation */
+    /* Flip */
     .flip{perspective: 1200px; min-height: 220px}
     .flip-inner{
       position: relative;
@@ -281,6 +283,48 @@
       display:none;
     }
 
+    /* Questions game */
+    .game{
+      border:1px solid var(--line);
+      background: rgba(246,247,251,.9);
+      border-radius: var(--radius);
+      padding:14px;
+    }
+    .hintBox{
+      border:1px solid var(--line);
+      background: rgba(255,255,255,.95);
+      border-radius: 16px;
+      padding:14px;
+      min-height: 130px;
+      white-space: pre-wrap;
+      line-height:1.45;
+    }
+    .hintLabel{
+      display:flex; justify-content:space-between; gap:10px; flex-wrap:wrap;
+      margin-bottom:10px;
+      color:var(--muted);
+      font-size:12px;
+    }
+    .answerBox{
+      margin-top:10px;
+      border:1px solid rgba(37,99,235,.20);
+      background: rgba(37,99,235,.06);
+      border-radius: 16px;
+      padding:12px 14px;
+      display:none;
+    }
+    .answerBox .ansTerm{font-weight:950; color:#0f172a; margin-bottom:6px}
+    .answerBox .ansDef{color:#111827; white-space:pre-wrap; line-height:1.45}
+    .warn{
+      display:inline-flex; gap:8px; align-items:center;
+      padding:7px 10px; border-radius:999px;
+      border:1px solid rgba(245,158,11,.25);
+      background: rgba(245,158,11,.10);
+      color:#92400e;
+      font-size:12px;
+      font-weight:800;
+    }
+
     .hide{display:none !important}
     .footer-note{margin-top:12px; font-size:12px; color:var(--muted)}
   </style>
@@ -290,12 +334,14 @@
   <div class="wrap">
     <header>
       <div class="brand">
-        <h1>History Study</h1>
-        <p>Flashcards + Practice Test. Filter by <strong>category</strong>, flip with animation, and run tests up to <strong>53 questions</strong>. (Auto-saves in your browser.)</p>
+        <h1>History Level Up</h1>
+        <p>Flashcards + Practice Test + <strong>Questions</strong> (vague-to-obvious hints). Everything saves in your browser.</p>
       </div>
+
       <div class="tabs" role="tablist" aria-label="Modes">
         <button class="tab active" data-view="flashcards" role="tab" aria-selected="true">Flashcards</button>
         <button class="tab" data-view="test" role="tab" aria-selected="false">Practice Test</button>
+        <button class="tab" data-view="questions" role="tab" aria-selected="false">Questions</button>
         <button class="tab" data-view="manage" role="tab" aria-selected="false">Manage Cards</button>
       </div>
     </header>
@@ -347,7 +393,7 @@
               <div class="known">
                 <div class="toggle">
                   <input type="checkbox" id="knownToggle" />
-                  <label for="knownToggle" style="margin:0;color:var(--text);font-weight:800">Mark as “Known”</label>
+                  <label for="knownToggle" style="margin:0;color:var(--text);font-weight:850">Mark as “Known”</label>
                 </div>
                 <span class="tag" id="categoryTag">Category: —</span>
                 <span class="tag" id="knownTag">Status: —</span>
@@ -408,6 +454,40 @@
                 <span class="pill" id="scoreDetail">—</span>
               </div>
               <div class="footer-note">Missed answers are highlighted in red. Correct answers are green.</div>
+            </div>
+          </div>
+
+          <!-- Questions Game View -->
+          <div id="view-questions" class="hide">
+            <div class="row" style="margin-bottom:10px">
+              <span class="warn">Vague → Obvious (4 hints)</span>
+              <span class="pill" id="qBadge">Item 0 / 0</span>
+              <span class="pill" id="qCat">Category: —</span>
+            </div>
+
+            <div class="game">
+              <div class="hintLabel">
+                <span id="hintStep">Hint 1 of 4</span>
+                <span class="mini">Click “Next Hint” to make it less vague</span>
+              </div>
+
+              <div class="hintBox" id="hintBox">—</div>
+
+              <div class="row" style="margin-top:12px">
+                <button class="btn" id="nextHintBtn">Next Hint</button>
+                <button class="btn secondary" id="revealBtn">Reveal Answer</button>
+                <button class="btn secondary" id="nextItemBtn">Next Item →</button>
+                <button class="btn danger" id="resetQBtn">Reset</button>
+              </div>
+
+              <div class="answerBox" id="answerBox">
+                <div class="ansTerm" id="ansTerm">—</div>
+                <div class="ansDef" id="ansDef">—</div>
+              </div>
+
+              <div class="footer-note">
+                Tip: Try to guess after each hint. You can reveal anytime to check if your thought was correct.
+              </div>
             </div>
           </div>
 
@@ -479,7 +559,7 @@
         <div class="head">
           <div>
             <h2>Study Settings</h2>
-            <div class="sub">Pick categories + scope.</div>
+            <div class="sub">Pick categories + scope (affects all modes).</div>
           </div>
         </div>
         <div class="body">
@@ -509,7 +589,7 @@
           <div class="hr"></div>
 
           <div class="mini">
-            Keyboard:
+            Keyboard (Flashcards):
             <div class="footer-note">
               <span class="pill">Space</span> flip &nbsp;
               <span class="pill">←</span>/<span class="pill">→</span> prev/next &nbsp;
@@ -529,7 +609,6 @@
      * DEFAULT DECK
      **************/
     const DEFAULT_CARDS = [
-      // Terms/Definitions
       { category:"U.S. History", term:"War of 1812", definition:"A conflict fought between the United States and Great Britain from 1812 to 1815 over trade restrictions, British impressment of American sailors, and U.S. expansion." },
       { category:"Ancient History", term:"The Odyssey", definition:"An ancient Greek epic poem attributed to Homer that follows the hero Odysseus on his long journey home after the Trojan War." },
       { category:"Soviet History", term:"Glasnost", definition:"A Soviet policy introduced by Mikhail Gorbachev in the 1980s that promoted openness, transparency, and freedom of information in government." },
@@ -561,37 +640,18 @@
       { category:"Ancient History", term:"Peloponnesian War", definition:"A long conflict between Athens and Sparta fought from 431 to 404 BCE in ancient Greece." },
       { category:"World Religions", term:"Buddhism", definition:"A major world religion founded by Siddhartha Gautama (the Buddha) that teaches the path to enlightenment through ethical living and meditation." },
 
-      // Fact statements for True/False pool
+      // Some facts for TF pool
       { category:"African History", term:"FACT: Johannesburg gold discovery", definition:"The discovery of gold in the Witwatersrand Basin in South Africa sparked the growth of Johannesburg.", fact:true },
-      { category:"African History", term:"FACT: Menelik II Ethiopia", definition:"The Ethiopian Empire was extended to its greatest extent under Menelik II.", fact:true },
-      { category:"Asian History", term:"FACT: Hammurabi code", definition:"While ruling Babylonia, Hammurabi established the earliest and most complete written legal code.", fact:true },
-      { category:"Asian History", term:"FACT: Indira Gandhi", definition:"Indira Gandhi was the first female prime minister of India.", fact:true },
-      { category:"Asian History", term:"FACT: Bongbong Marcos", definition:"The current president of the Philippines, Bongbong Marcos, is the son of the country’s former dictator, Ferdinand Marcos.", fact:true },
-      { category:"Asian History", term:"FACT: Silk Road", definition:"An ancient trade network between China and the West was defined by the trading of silk.", fact:true },
-      { category:"Asian History", term:"FACT: Baghdad Abbasids", definition:"The city of Baghdad served as the capital of the Abbasid Caliphate.", fact:true },
-      { category:"Ancient History", term:"FACT: Sparta training", definition:"Sparta was a powerful city-state in Greece where boys began military training at age seven.", fact:true },
-      { category:"Ancient History", term:"FACT: Alexander succeeds Philip", definition:"In 336 BCE, Alexander the Great succeeded his father, Philip II, as King of Macedon.", fact:true },
-      { category:"European History", term:"FACT: Constantine converts", definition:"Constantine the Great was the first Roman emperor to convert to Christianity.", fact:true },
-      { category:"European History", term:"FACT: Henry VIII break", definition:"Henry VIII broke from the Catholic Church to annul his marriage to Catherine of Aragon in order to marry Anne Boleyn.", fact:true },
+      { category:"Asian History", term:"FACT: Hammurabi code", definition:"While ruling Babylonia, Hammurabi established an early and highly complete written legal code.", fact:true },
       { category:"European History", term:"FACT: Battle of the Bulge", definition:"During World War II, the final major German offensive in the West occurred at the Battle of the Bulge, fought mostly in Belgium and Luxembourg in December 1944.", fact:true },
-      { category:"European History", term:"FACT: Russo-Ukrainian War", definition:"The Russo-Ukrainian War has been the deadliest war in Europe since World War II.", fact:true },
-      { category:"European History", term:"FACT: Leonardo works", definition:"Leonardo da Vinci created notable Italian Renaissance artworks such as Mona Lisa and The Last Supper.", fact:true },
-      { category:"European History", term:"FACT: Churchill leads UK", definition:"During World War II, the United Kingdom was led by Prime Minister Winston Churchill.", fact:true },
-      { category:"European History", term:"FACT: Frederick the Great", definition:"Frederick the Great’s nearly 50-year reign in the 18th century led to the emergence of Prussia as a major European power.", fact:true },
-      { category:"European History", term:"FACT: Martin Luther theses", definition:"Martin Luther sparked the Protestant Reformation after criticizing the sale of indulgences in his Ninety-five Theses.", fact:true },
-      { category:"Latin American History", term:"FACT: Juan Perón", definition:"Juan Perón was the president of Argentina from 1946 until his overthrow in 1955 and again from 1973 until his death in 1974.", fact:true },
-      { category:"Latin American History", term:"FACT: Haiti revolt", definition:"Haiti was the site of a successful slave revolt against French colonial rule.", fact:true },
-      { category:"U.S. History", term:"FACT: Cuba & Spanish-American War", definition:"Cuba’s struggle for independence sparked the Spanish-American War.", fact:true },
       { category:"U.S. History", term:"FACT: Jefferson authored DOI", definition:"The Declaration of Independence was principally authored by Thomas Jefferson.", fact:true },
-      { category:"U.S. History", term:"FACT: Obama slogans", definition:"Barack Obama ran with the primary slogans “Hope” and “Forward” during his two presidential campaigns.", fact:true },
-      { category:"U.S. History", term:"FACT: Hamilton musical", definition:"Lin-Manuel Miranda’s 2015 musical, Hamilton, covers the life of Alexander Hamilton during the American Revolution; Hamilton was also the first Secretary of the Treasury.", fact:true },
     ];
 
     /*****************
      * STORAGE + STATE
      *****************/
-    const STORAGE_KEY = "history_study_deck_white_v1";
-    const PROGRESS_KEY = "history_study_known_white_v1";
+    const STORAGE_KEY = "history_levelup_deck_v2";
+    const PROGRESS_KEY = "history_levelup_known_v2";
 
     let cards = [];
     let knownSet = new Set();
@@ -599,11 +659,19 @@
     let studyCategory = "all";
     let studyScope = "all"; // all/known/unknown
     let filteredIndexes = [];
+
+    // Flashcards
     let currentPos = 0;
     let showingBack = false;
 
+    // Test
     let testQuestions = [];
     let testGraded = false;
+
+    // Questions game
+    let qPos = 0;
+    let qHintIndex = 0; // 0..3
+    let qRevealed = false;
 
     const $ = (id) => document.getElementById(id);
     const uniq = (arr) => Array.from(new Set(arr));
@@ -621,6 +689,13 @@
       knownSet = new Set(storedKnown ? JSON.parse(storedKnown) : []);
     }
 
+    function setKnown(card, val){
+      const k = cardKey(card);
+      if(val) knownSet.add(k);
+      else knownSet.delete(k);
+      saveProgress();
+    }
+
     function getCategories(){
       return uniq(cards.map(c => c.category)).sort((a,b)=>a.localeCompare(b));
     }
@@ -635,13 +710,18 @@
         })
         .map(x => x.idx);
 
-      if(filteredIndexes.length === 0) currentPos = 0;
-      else currentPos = clamp(currentPos, 0, filteredIndexes.length - 1);
+      currentPos = filteredIndexes.length ? clamp(currentPos, 0, filteredIndexes.length - 1) : 0;
+      qPos = filteredIndexes.length ? clamp(qPos, 0, filteredIndexes.length - 1) : 0;
     }
 
     function currentCard(){
       if(filteredIndexes.length === 0) return null;
       return cards[ filteredIndexes[currentPos] ];
+    }
+
+    function currentQCard(){
+      if(filteredIndexes.length === 0) return null;
+      return cards[ filteredIndexes[qPos] ];
     }
 
     function updateTopBadges(){
@@ -653,7 +733,7 @@
     /************
      * VIEWS
      ************/
-    const views = ["flashcards","test","manage"];
+    const views = ["flashcards","test","questions","manage"];
 
     function setView(view){
       for(const v of views){
@@ -673,6 +753,10 @@
         $("mainTitle").textContent = "Practice Test";
         $("mainSub").textContent = "Multiple choice and/or True/False from your deck (up to 53 questions).";
         renderTestShell();
+      } else if(view === "questions"){
+        $("mainTitle").textContent = "Questions";
+        $("mainSub").textContent = "Start vague, get less vague with each hint. Reveal anytime to check your guess.";
+        renderQuestionsGame(true);
       } else {
         $("mainTitle").textContent = "Manage Cards";
         $("mainSub").textContent = "Search, filter by category, add/edit cards, export/import.";
@@ -702,7 +786,6 @@
       const total = filteredIndexes.length;
       const card = currentCard();
 
-      // reset flip to front
       showingBack = false;
       $("flipInner").classList.remove("is-flipped");
 
@@ -759,14 +842,11 @@
         [filteredIndexes[i], filteredIndexes[j]] = [filteredIndexes[j], filteredIndexes[i]];
       }
       currentPos = 0;
+      qPos = 0;
       renderFlashcard();
-    }
-
-    function setKnown(card, val){
-      const k = cardKey(card);
-      if(val) knownSet.add(k);
-      else knownSet.delete(k);
-      saveProgress();
+      if(document.querySelector(".tab.active")?.dataset.view === "questions"){
+        renderQuestionsGame(true);
+      }
     }
 
     /***************
@@ -956,6 +1036,193 @@
       $("testResult").scrollIntoView({behavior:"smooth", block:"start"});
     }
 
+    /***********************
+     * QUESTIONS GAME LOGIC
+     ***********************/
+    const STOPWORDS = new Set([
+      "a","an","the","and","or","but","so","to","of","in","on","for","with","by","from","during","into","over",
+      "was","were","is","are","be","been","being","that","this","these","those","as","at","it","its","their",
+      "who","whom","which","when","where","while","until","after","before","between","through","about",
+      "first","major","notable","successful","important","rapid","political","social","economic"
+    ]);
+
+    function escapeRegExp(s){ return s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"); }
+
+    function generalizeYears(text){
+      // Replace 4-digit years with decade form (e.g., 1812 -> 1810s, 1969 -> 1960s)
+      return text.replace(/\b(1[0-9]{3}|20[0-9]{2})\b/g, (m) => {
+        const year = parseInt(m, 10);
+        const decade = Math.floor(year / 10) * 10;
+        return `${decade}s`;
+      }).replace(/\b(\d+)\s*BCE\b/gi, (m) => {
+        // Keep BCE but soften: "5th century BCE" is hard; just keep BCE number generalized a bit if possible
+        const num = parseInt(m,10);
+        if(Number.isFinite(num) && num >= 100){
+          const century = Math.ceil(num / 100);
+          return `${century}th century BCE`;
+        }
+        return m;
+      });
+    }
+
+    function redactTerm(definition, term){
+      // Redact the exact term (and its words) from the definition
+      let out = definition;
+      // redact full term
+      const reFull = new RegExp(escapeRegExp(term), "gi");
+      out = out.replace(reFull, "____");
+
+      // also redact individual meaningful words from the term (avoid tiny words)
+      const words = term.split(/[\s–—-]+/).map(w => w.trim()).filter(w => w.length >= 4);
+      for(const w of words){
+        const re = new RegExp(`\\b${escapeRegExp(w)}\\b`, "gi");
+        out = out.replace(re, "____");
+      }
+
+      return out;
+    }
+
+    function guessType(card){
+      const t = card.term.toLowerCase();
+      const d = card.definition.toLowerCase();
+
+      const has = (s) => t.includes(s) || d.includes(s);
+
+      if(has("war") || has("battle") || has("revolution") || has("riot") || has("offensive") || has("conflict")) return "event";
+      if(has("poem") || has("musical") || has("novel") || has("artwork") || has("painting") || has("epic")) return "work";
+      if(has("city") || has("region") || has("island") || has("country") || has("capital") || has("basin")) return "place";
+      if(has("policy") || has("program") || has("organization") || has("alliance") || has("regime") || has("term used")) return "concept";
+      if(has("president") || has("prime minister") || has("leader") || has("philosopher") || has("economist") || has("explorer") || has("emperor") || has("king")) return "person";
+      return "topic";
+    }
+
+    function pickKeywords(text, limit=6){
+      const words = text
+        .replace(/[“”"’']/g,"")
+        .replace(/[^a-zA-Z0-9\s-]/g," ")
+        .split(/\s+/)
+        .map(w => w.trim())
+        .filter(w => w.length >= 4)
+        .filter(w => !STOPWORDS.has(w.toLowerCase()));
+
+      // prefer capitalized words (proper nouns) but without giving away term (term already redacted)
+      const caps = words.filter(w => /^[A-Z]/.test(w));
+      const rest = words.filter(w => !/^[A-Z]/.test(w));
+
+      const uniqKeep = (arr) => {
+        const seen = new Set();
+        const out = [];
+        for(const w of arr){
+          const key = w.toLowerCase();
+          if(seen.has(key)) continue;
+          seen.add(key);
+          out.push(w);
+          if(out.length >= limit) break;
+        }
+        return out;
+      };
+
+      const chosen = uniqKeep([...caps, ...rest]);
+      return chosen;
+    }
+
+    function buildHints(card){
+      const type = guessType(card);
+      const cat = card.category;
+
+      // create "safe" definition: redact term + generalize years
+      const redacted = generalizeYears(redactTerm(card.definition, card.term));
+
+      // Hint 1: very vague
+      const hint1 = `This is a ${type} from the category: ${cat}.`;
+
+      // Hint 2: time vibe + keywords
+      const kw = pickKeywords(redacted, 6);
+      const kwLine = kw.length ? `Key clues: ${kw.slice(0,4).join(", ")}.` : "Key clues: focus on the main idea and who/where it involves.";
+      const hint2 = `It connects to ${cat} and involves big ideas/players.\n${kwLine}`;
+
+      // Hint 3: first sentence/phrase but shortened + still redacted
+      const firstClause = redacted.split(/[.]/)[0].trim();
+      const shortClause = firstClause.length > 140 ? firstClause.slice(0, 140).trim() + "…" : firstClause;
+      const hint3 = `More specific:\n${shortClause}`;
+
+      // Hint 4: nearly obvious, but still redacted and years generalized
+      // avoid giving away: keep term redacted; keep decades not exact years
+      let hint4 = redacted.trim();
+      if(hint4.length > 220) hint4 = hint4.slice(0, 220).trim() + "…";
+      const hint4Final = `Almost obvious:\n${hint4}`;
+
+      return [hint1, hint2, hint3, hint4Final];
+    }
+
+    function renderQuestionsGame(resetHint=false){
+      computeFiltered();
+
+      const total = filteredIndexes.length;
+      const card = currentQCard();
+
+      if(resetHint){
+        qHintIndex = 0;
+        qRevealed = false;
+        $("answerBox").style.display = "none";
+      }
+
+      if(!card){
+        $("qBadge").textContent = `Item 0 / 0`;
+        $("qCat").textContent = `Category: —`;
+        $("hintStep").textContent = "Hint 1 of 4";
+        $("hintBox").textContent = "No cards match your filters. Change Study Settings.";
+        $("answerBox").style.display = "none";
+        return;
+      }
+
+      const hints = buildHints(card);
+
+      $("qBadge").textContent = `Item ${qPos + 1} / ${total}`;
+      $("qCat").textContent = `Category: ${card.category}`;
+      $("hintStep").textContent = `Hint ${qHintIndex + 1} of 4`;
+      $("hintBox").textContent = hints[qHintIndex];
+
+      if(qRevealed){
+        $("answerBox").style.display = "block";
+        $("ansTerm").textContent = card.term;
+        $("ansDef").textContent = card.definition;
+      } else {
+        $("answerBox").style.display = "none";
+      }
+    }
+
+    function nextHint(){
+      const card = currentQCard();
+      if(!card) return;
+      qHintIndex = Math.min(3, qHintIndex + 1);
+      renderQuestionsGame(false);
+    }
+
+    function revealAnswer(){
+      const card = currentQCard();
+      if(!card) return;
+      qRevealed = true;
+      $("answerBox").style.display = "block";
+      $("ansTerm").textContent = card.term;
+      $("ansDef").textContent = card.definition;
+    }
+
+    function nextQItem(){
+      if(filteredIndexes.length === 0) return;
+      qPos = (qPos + 1) % filteredIndexes.length;
+      qHintIndex = 0;
+      qRevealed = false;
+      renderQuestionsGame(true);
+    }
+
+    function resetQuestions(){
+      qPos = 0;
+      qHintIndex = 0;
+      qRevealed = false;
+      renderQuestionsGame(true);
+    }
+
     /*****************
      * MANAGE
      *****************/
@@ -1040,6 +1307,7 @@
           computeFiltered();
           const pos = filteredIndexes.indexOf(idx);
           currentPos = pos >= 0 ? pos : 0;
+          qPos = pos >= 0 ? pos : 0;
 
           setView("flashcards");
           renderFlashcard();
@@ -1099,6 +1367,7 @@
       saveDeck();
       renderManage();
       renderFlashcard();
+      renderQuestionsGame(true);
       clearForm();
     }
 
@@ -1115,16 +1384,17 @@
       saveDeck(); saveProgress();
       renderManage();
       renderFlashcard();
+      renderQuestionsGame(true);
       clearForm();
     }
 
     function exportJSON(){
-      const payload = { version: 1, exportedAt: new Date().toISOString(), cards, knownKeys: Array.from(knownSet) };
+      const payload = { version: 2, exportedAt: new Date().toISOString(), cards, knownKeys: Array.from(knownSet) };
       const blob = new Blob([JSON.stringify(payload, null, 2)], {type:"application/json"});
       const url = URL.createObjectURL(blob);
       const a = document.createElement("a");
       a.href = url;
-      a.download = "history-study-deck.json";
+      a.download = "history-levelup-deck.json";
       a.click();
       URL.revokeObjectURL(url);
     }
@@ -1138,8 +1408,10 @@
           cards = data.cards;
           knownSet = new Set(Array.isArray(data.knownKeys) ? data.knownKeys : []);
           saveDeck(); saveProgress();
+          populateCategorySelects();
           renderManage();
           renderFlashcard();
+          renderQuestionsGame(true);
           alert("Imported successfully!");
         } catch(e){
           alert("Import failed: " + e.message);
@@ -1156,6 +1428,7 @@
         btn.addEventListener("click", () => setView(btn.dataset.view));
       });
 
+      // flashcards
       $("flipBtn").addEventListener("click", () => flipCard());
       $("prevBtn").addEventListener("click", prevCard);
       $("nextBtn").addEventListener("click", nextCard);
@@ -1166,28 +1439,33 @@
           saveProgress();
           renderFlashcard();
           renderManage();
+          renderQuestionsGame(true);
         }
       });
-
       $("knownToggle").addEventListener("change", (e) => {
         const c = currentCard();
         if(!c) return;
         setKnown(c, e.target.checked);
         renderFlashcard();
         renderManage();
+        renderQuestionsGame(false);
       });
-
       $("fcStage").addEventListener("click", () => flipCard());
 
+      // sidebar filters
       $("studyCategory").addEventListener("change", (e) => {
         studyCategory = e.target.value;
         currentPos = 0;
+        qPos = 0;
         renderFlashcard();
+        renderQuestionsGame(true);
       });
       $("studyScope").addEventListener("change", (e) => {
         studyScope = e.target.value;
         currentPos = 0;
+        qPos = 0;
         renderFlashcard();
+        renderQuestionsGame(true);
       });
       $("jumpRandomBtn").addEventListener("click", () => {
         computeFiltered();
@@ -1197,10 +1475,18 @@
       });
       $("showAnswerBtn").addEventListener("click", () => flipCard(true));
 
+      // test
       $("startTestBtn").addEventListener("click", startTest);
       $("newSetBtn").addEventListener("click", startTest);
       $("gradeTestBtn").addEventListener("click", gradeTest);
 
+      // questions game
+      $("nextHintBtn").addEventListener("click", nextHint);
+      $("revealBtn").addEventListener("click", revealAnswer);
+      $("nextItemBtn").addEventListener("click", nextQItem);
+      $("resetQBtn").addEventListener("click", resetQuestions);
+
+      // manage
       $("searchInput").addEventListener("input", renderManage);
       $("categoryFilter").addEventListener("change", renderManage);
       $("knownFilter").addEventListener("change", renderManage);
@@ -1217,6 +1503,7 @@
         e.target.value = "";
       });
 
+      // keyboard shortcuts (flashcards)
       window.addEventListener("keydown", (e) => {
         const activeView = document.querySelector(".tab.active")?.dataset.view;
         if(activeView !== "flashcards") return;
@@ -1236,6 +1523,7 @@
           $("knownToggle").checked = newVal;
           renderFlashcard();
           renderManage();
+          renderQuestionsGame(false);
         }
       });
     }
@@ -1256,7 +1544,9 @@
       bindEvents();
       setView("flashcards");
       renderManage();
+      renderQuestionsGame(true);
     })();
   </script>
 </body>
 </html>
+
